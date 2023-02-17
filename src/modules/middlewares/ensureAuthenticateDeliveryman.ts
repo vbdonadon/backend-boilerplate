@@ -1,30 +1,37 @@
-import { NextFunction, Request, Response } from "express";
-import { verify } from "jsonwebtoken";
+import { NextFunction, Request, Response } from 'express'
+import { verify } from 'jsonwebtoken'
 
 interface IPayload {
-  sub: string;
+  sub: string
 }
 
-export async function ensureAuthenticateDeliveryman(request: Request, response: Response, next: NextFunction) {
-  const authHeader = request.headers.authorization;
+export async function ensureAuthenticateDeliveryman(
+  request: Request,
+  response: Response,
+  next: NextFunction
+) {
+  const authHeader = request.headers.authorization
 
   if (!authHeader) {
     return response.status(401).json({
-      message: "Token is missing!"
-    });
+      message: 'Token is missing!',
+    })
   }
 
-  const [, token] = authHeader.split(" ");
+  const [, token] = authHeader.split(' ')
 
   try {
-    const { sub } = verify(token, "fea80f2db003d4adq4536023814aa885") as IPayload
+    const { sub } = verify(
+      token,
+      'fea80f2db003d4adq4536023814aa885'
+    ) as IPayload
 
-    request.id_deliveryman = sub;
+    request.id_deliveryman = sub
 
-    return next();
+    return next()
   } catch (error) {
     return response.status(401).json({
-      message: "Invalid token!"
-    });
+      message: 'Invalid token!',
+    })
   }
 }

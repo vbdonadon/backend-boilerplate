@@ -1,11 +1,11 @@
-import { prisma } from "../../../database/prismaClient";
-import { hash } from "bcrypt"
+import { prisma } from '../../../database/prismaClient'
+import { hash } from 'bcrypt'
 
-import { PasswordValidation } from "../../../utils/passwordValidator";
+import { PasswordValidation } from '../../../utils/passwordValidator'
 
 interface ICreateUser {
-  username: string;
-  password: string;
+  username: string
+  password: string
 }
 
 export class CreateUserUseCase {
@@ -14,33 +14,34 @@ export class CreateUserUseCase {
       where: {
         username: {
           equals: username,
-          mode: "insensitive"
-        }
-      }
-    });
+          mode: 'insensitive',
+        },
+      },
+    })
 
-    if (usernameAlreadyExist) throw new Error('Username already exist!');
-    
-    const validatePassword = await PasswordValidation(password);
+    if (usernameAlreadyExist) throw new Error('Username already exist!')
 
-    console.log(validatePassword)
+    const validatePassword = await PasswordValidation(password)
 
-    if (validatePassword.length >= 1) throw new Error(`The password is missing the following requirements: ${validatePassword}`);
-    
-    const hashPassword = await hash(password, 10);
+    if (validatePassword.length >= 1)
+      throw new Error(
+        `The password is missing the following requirements: ${validatePassword}`
+      )
+
+    const hashPassword = await hash(password, 10)
 
     const user = await prisma.user.create({
       data: {
         username: username,
-        password: hashPassword
+        password: hashPassword,
       },
       select: {
         id: true,
         username: true,
-        created_at: true
-      }
-    });
+        created_at: true,
+      },
+    })
 
-    return user;
+    return user
   }
 }
